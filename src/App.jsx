@@ -1,14 +1,24 @@
-import "./App.css"
-import ContextProvider from "./assets/store/logic";
-import { Outlet } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegistrationPage";
+import "./App.css";
+import Dashboard from "./pages/Dashboard";
+import CreateStock from './pages/CreateStock'
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
-    <>
-      <ContextProvider>
-        <Outlet />
-      </ContextProvider>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />}>
+        <Route path="home/dashboard" element={<Dashboard />} />
+        <Route path="home/add-item" element={<CreateStock />} />
+        <Route path="home/edit-item/:stockId" element={<CreateStock />} />
+      </Route>
+      <Route path="/user/login" element={<LoginPage />} />
+      <Route path="/user/register" element={<RegisterPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 

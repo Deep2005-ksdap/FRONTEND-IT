@@ -1,29 +1,48 @@
-import { useContext, useState } from "react";
-import style from "./NavBar.module.css";
-import { Logic } from "../../store/logic";
+import { useContext, useEffect, useState } from "react";
+import { Logic } from "../../store/Context";
 import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+  const navigate = useNavigate();
   const [active, setActive] = useState(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(Logic);
-  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setIsLoggedIn(true); // simulate login
-    setActive(true);
-    navigate("/home/dashboard"); // go to dashboard
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        setIsLoggedIn(false);
+        navigate("/");
+        const data = await res.json();
+        console.log("Logout response:", data);
+      }
+    } catch (err) {
+      console.log("Logout failed:", err);
+    }
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false); // simulate logout
-    navigate("/"); // go to home
-  };
+  useEffect(() => {
+    if (isLoggedIn) {
+      setActive(true);
+    }
+  }, []);
+
+  // const handleLogout = () => {
+  //   navigate("/"); // go to home
+  // };
 
   return (
     <nav
       className={`flex w-full items-center justify-center  py-2 bg-gradient-to-r from-blue-100 via-white to-green-100 shadow-xl`}
     >
-      <div style={{width:"95%",}} className="flex justify-between items-center">
+      <div
+        style={{ width: "95%" }}
+        className="flex justify-between items-center"
+      >
         <Link to="/" className="flex flex-col space-x-3">
           <img
             src="/logo.png"
@@ -40,18 +59,17 @@ const NavBar = () => {
         <div className="space-x-1 sm:flex sm:space-x-4 sm:mr-4">
           {!isLoggedIn ? (
             <Link
-            to={"/user/login"}
-              onClick={handleLogin}
-              className={`px-4 py-2 text-blue-600 rounded font-semibold hover:bg-blue-100 transition ${
-                active ? "bg-blue-200" : ""
-              }`}
+              to={"/user/login"}
+              className={`px-4 py-2 text-blue-600 rounded font-semibold hover:bg-blue-100 transition`}
             >
               SIGN-IN
             </Link>
           ) : (
             <Link
               to="/home/dashboard"
-              className="px-4 py-2 text-blue-600 rounded font-semibold hover:bg-blue-100 transition"
+              className={`px-4 py-2 text-blue-600 rounded font-semibold hover:bg-blue-100 transition ${
+                active ? "border-b-1 border-blue-500 bg-blue-200" : ""
+              }`}
             >
               Dashboard
             </Link>

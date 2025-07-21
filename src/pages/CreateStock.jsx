@@ -32,8 +32,8 @@ const CreateStock = () => {
   console.log("category is :", category);
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-white shadow bg-gradient-to-r from-blue-100 via-white to-green-100">
-      <div className="w-[70%] border-white border-2 p-4 rounded-2xl hover:shadow-xl  ">
+    <div className="min-h-screen  flex justify-center items-center bg-white shadow bg-gradient-to-r from-blue-100 via-white to-green-100">
+      <div className="max-w-[600px] w-full border-white border-2 p-4 rounded-2xl hover:shadow-xl  ">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
           ADD Stock
         </h2>
@@ -53,7 +53,7 @@ const CreateStock = () => {
                 setCategory(event.target.value);
               }}
               id="category"
-              className="w-full py-2 *border rounded-md outline focus:outline-none cursor-pointer"
+              className="w-full py-2 *border rounded-md  focus:outline-none cursor-pointer"
             >
               <option value="" disabled>
                 Select from here
