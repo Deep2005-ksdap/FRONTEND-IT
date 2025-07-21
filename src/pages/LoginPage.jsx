@@ -9,7 +9,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("")
+  const [err, setErr] = useState("");
 
   const LoggedInStatus = async (email, password) => {
     try {
@@ -23,7 +23,7 @@ const LoginPage = () => {
       });
 
       const data = await res.json();
-      setErr(data.message)
+      setErr(data.message);
       console.log("data after login", data);
       if (res.ok) {
         dispatchLogin(true);
@@ -39,6 +39,7 @@ const LoginPage = () => {
     await LoggedInStatus(email, password);
     setEmail("");
     setPassword("");
+    setErr("");
   };
 
   return (
@@ -47,10 +48,13 @@ const LoginPage = () => {
         <h1 className="text-2xl font-bold sm:text-3xl">
           Login to your <u>INVENTORY</u>
         </h1>
-        {err && <div className="font-extrabold">
-            <p className="text-red-600 bg-yellow-400 px-4 py-2 rounded-lg">- {err}</p>
+        {err && (
+          <div className="font-extrabold">
+            <p className="text-red-600 bg-yellow-400 px-4 py-2 rounded-lg">
+              - {err}
+            </p>
           </div>
-        }
+        )}
         <form
           onSubmit={(e) => loginHandler(e)}
           className="border max-w-[1000px] min-w-[300px] rounded-xl flex flex-col backdrop-blur-xl border-white items-center mt-2 px-2 py-4 hover:border-green-500 hover:shadow-xl hover:shadow-gray-700"

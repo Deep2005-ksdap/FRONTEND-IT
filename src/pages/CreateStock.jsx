@@ -1,9 +1,11 @@
 import { useContext, useRef, useState } from "react";
+import { Logic } from "../store/Context";
 import { useNavigate } from "react-router-dom";
 
 const CreateStock = () => {
   const navigate = useNavigate();
-  const [category, setCategory] = useState("");
+  const { createStock } = useContext(Logic);
+  const [category, setCategory] = useState("groceries");
 
   const itemNameElement = useRef();
   const itemPriceElement = useRef();
@@ -11,25 +13,32 @@ const CreateStock = () => {
   const itemBrandElement = useRef();
   const itemSizeElement = useRef();
 
-  const handleData = (event) => {
+  
+  const handleData = async (event) => {
     event.preventDefault();
 
-    const itemName = itemNameElement.current.value;
-    const itemPrice = itemPriceElement.current.value;
-    const itemUnits = itemUnitsElement.current.value;
-    const itemBrand =
+    const itemname = itemNameElement.current.value;
+    const itemprice = itemPriceElement.current.value;
+    const itemunits = itemUnitsElement.current.value;
+    const itembrand =
       category === "electronics" ? itemBrandElement.current.value : "";
-    const itemSize =
+    const itemsize =
       category === "clothing" ? itemSizeElement.current.value : "";
 
-    createStock(itemName, itemPrice, itemUnits, itemBrand, itemSize);
+    await createStock(
+      itemname,
+      itemprice,
+      itemunits,
+      itembrand,
+      category,
+      itemsize
+    );
+    navigate("/home/dashboard");
 
     itemNameElement.current.value = "";
     itemPriceElement.current.value = "";
     itemUnitsElement.current.value = "";
-    navigate("/dashboard");
   };
-  console.log("category is :", category);
 
   return (
     <div className="min-h-screen  flex justify-center items-center bg-white shadow bg-gradient-to-r from-blue-100 via-white to-green-100">
@@ -38,18 +47,12 @@ const CreateStock = () => {
           ADD Stock
         </h2>
 
-        <form
-          method="POST"
-          action="/home/add-item"
-          onSubmit={handleData}
-          className="px-2"
-        >
+        <form onSubmit={handleData} className="px-2">
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Item Name</label>
             <select
               name="category"
               onChange={(event) => {
-                console.log(event.target.value);
                 setCategory(event.target.value);
               }}
               id="category"

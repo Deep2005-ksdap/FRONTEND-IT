@@ -1,15 +1,38 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Logic } from "../store/Context";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 
 const Dashboard = () => {
-  const { serverData, dataOfUser } = useContext(Logic);
+  const navigate = useNavigate();
+  const { serverData, dataOfUser, setServerData } = useContext(Logic);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     dataOfUser();
   }, []);
+
+  const handleDeleteItem = async (id) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/home/delete-item/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+      const data = await res.json();
+      console.log(data);
+      if (res.ok) {
+        setMessage(data.message);
+        navigate("/home/dashboard");
+        // setServerData((prev) => prev.filter(item._id !== id));
+      }
+    } catch (err) {
+      console.log("Error in deletion", err);
+    }
+  };
 
   const ownerName = serverData ? serverData.data.username.firstname : "USER";
   let lowStockItemsCount,
@@ -42,6 +65,7 @@ const Dashboard = () => {
           "{ownerName}"
         </span>
       </h1>
+      {message && alert(message)}
       <ol className="flex w-full flex-col gap-2 px-6 py-4 text-gray-700 bg-blue-100 rounded-2xl text-left font-medium mb-6">
         <li className="flex justify-between items-center font-bold">
           <span>Total value of Your Inventory:</span>
@@ -105,14 +129,16 @@ const Dashboard = () => {
                         </td>
                       )}
                       {item.category === "clothing" && (
-                        <td className="font-bold px-4 py-2">{item.itemSize}</td>
+                        <td className="font-bold px-4 py-2">{item.itemsize}</td>
                       )}
                       <td className="text-blue-500 text-xl hover:text-blue-700 hover:cursor-pointer px-4 py-2 flex justify-center">
                         <FaEdit />
                       </td>
                       <td className="text-red-500 text-xl hover:text-red-700 hover:cursor-pointer px-4 py-2 item-center">
                         <div className="flex justify-center">
-                          <MdDeleteForever />
+                          <button onClick={() => handleDeleteItem(item._id)}>
+                            <MdDeleteForever />
+                          </button>
                         </div>
                       </td>
                     </tr>
