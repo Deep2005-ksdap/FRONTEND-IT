@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Logic } from "../store/Context";
 
 const RegistrationPage = () => {
@@ -17,6 +17,9 @@ const RegistrationPage = () => {
   };
 
   const registeration = async (fullname, email, password) => {
+    if(email || password || fullname){
+        alert("Fill your Details")
+      }
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/register`, {
         method: "POST",
@@ -25,7 +28,6 @@ const RegistrationPage = () => {
       });
 
       const data = await res.json();
-      console.log("data after registration complete: ", data);
       if (res.status === 400) {
         setErr(data);
       }
@@ -34,14 +36,13 @@ const RegistrationPage = () => {
         navigate("/user/login");
       }
     } catch (err) {
-      console.log("error in submit the Detail:", err);
+      console.error("error in submit the Detail:", err);
     }
   };
 
   const handleRegisteration = async (e) => {
     e.preventDefault();
 
-    console.log(fullname, email, password);
     await registeration(fullname, email, password);
 
     setFirstname("");
@@ -114,9 +115,9 @@ const RegistrationPage = () => {
 
           <p className="mb-1">
             ~ already have an
-            <a className="text-blue-600" href="/user/login">
+            <Link className="text-blue-600" to={"/user/login"}>
               Account
-            </a>{" "}
+            </Link>
             ?
           </p>
           <button className="bg-green-500 font-bold text-white w-25 mb-2 py-2 cursor-pointer rounded-[10px] inline hover:bg-green-600">

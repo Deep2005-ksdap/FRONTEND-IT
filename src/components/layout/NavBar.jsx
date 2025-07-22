@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 const NavBar = () => {
   const navigate = useNavigate();
   const [active, setActive] = useState(false);
-  const { isLoggedIn, setIsLoggedIn } = useContext(Logic);
+  const { isLoggedIn, setServerData,dispatchLogin } = useContext(Logic);
 
   const handleLogout = async () => {
     try {
@@ -14,14 +14,14 @@ const NavBar = () => {
         credentials: "include",
       });
 
+      const data = await res.json();
       if (res.ok) {
-        setIsLoggedIn(false);
+        dispatchLogin(false);
+        setServerData(null)
         navigate("/");
-        const data = await res.json();
-        console.log("Logout response:", data);
       }
     } catch (err) {
-      console.log("Logout failed:", err);
+      alert("Logout failed:", err);
     }
   };
 
@@ -31,9 +31,6 @@ const NavBar = () => {
     }
   }, []);
 
-  // const handleLogout = () => {
-  //   navigate("/"); // go to home
-  // };
 
   return (
     <nav

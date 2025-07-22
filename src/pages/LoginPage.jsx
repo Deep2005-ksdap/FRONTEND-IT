@@ -1,45 +1,27 @@
 import { useState } from "react";
 import { useContext } from "react";
 import "./LoginPage.module.css";
-import { useNavigate } from "react-router-dom";
-import Context, { Logic } from "../store/Context";
+import { Link, useNavigate } from "react-router-dom";
+import { Logic } from "../store/Context";
 
 const LoginPage = () => {
-  const { dispatchLogin } = useContext(Logic);
+  const { LoggedInStatus } = useContext(Logic);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
 
-  const LoggedInStatus = async (email, password) => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      setErr(data.message);
-      console.log("data after login", data);
-      if (res.ok) {
-        dispatchLogin(true);
-        navigate("/home/dashboard");
-      }
-    } catch (error) {
-      console.log("Login error", error);
-    }
-  };
-
   const loginHandler = async (e) => {
     e.preventDefault();
-    await LoggedInStatus(email, password);
-    setEmail("");
-    setPassword("");
-    setErr("");
+    const data = await LoggedInStatus(email, password);
+    setErr(data?.message);
+
+    if (data.message === "Login successful") {
+      setEmail("");
+      setPassword("");
+      setErr("");
+      navigate("/home/dashboard");
+    }
   };
 
   return (
@@ -82,9 +64,9 @@ const LoginPage = () => {
           <div className="mb-1 text-left w-full">
             ~New uesr?
             <p>
-              <a className="text-blue-600 px-3" href="/user/register">
+              <Link to={"/user/register"} className="text-blue-600 px-3">
                 REGISTER yourself
-              </a>{" "}
+              </Link>
             </p>
           </div>
           <button className="bg-green-500 font-bold text-white w-25 mb-2 py-2 cursor-pointer rounded-[10px] inline hover:bg-green-600">

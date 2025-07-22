@@ -1,24 +1,51 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 export const Logic = createContext({
   isLoggedIn: false,
   serverData: null,
+  setAllStock: () => {},
+  LoggedInStatus: async () => {},
   setServerData: () => {},
   setIsLoggedIn: () => {},
   dispatchLogin: () => {},
+  editItemHandler: async () => {},
   createStock: async () => {},
-  dataOfUser: () => {},
+  dataOfUser: async () => {},
 });
 
 const Context = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [serverData, setServerData] = useState(null);
+  const [allStock, setAllStock] = useState();
 
   const dispatchLogin = (value) => {
     setIsLoggedIn(value);
   };
 
   console.log(isLoggedIn);
+  const LoggedInStatus = async (email, password) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        dispatchLogin(true);
+      }
+      return data;
+    } catch (error) {
+      alert("Login err");
+      console.error();
+      "Login error", error;
+    }
+  };
+
   const dataOfUser = async () => {
     try {
       const res = await fetch(
@@ -29,10 +56,13 @@ const Context = ({ children }) => {
         }
       );
       const data = await res.json();
-      dispatchLogin(true);
-      setServerData(data || null);
+      if (res.ok) {
+        setServerData(data || null);
+        setAllStock(data?.data.allStock);
+      }
+      return data;
     } catch (err) {
-      console.log("error in fetching data, ", err);
+      console.error("error in fetching data, ", err);
     }
   };
 
@@ -60,16 +90,12 @@ const Context = ({ children }) => {
       });
 
       const data = await res.json();
-      console.log("Data after data adding", data);
-      if (res.ok) {
-        alert(data.message);
-      }
     } catch (error) {
-      console.log("error in creating the stock", error);
+      console.error("error in creating the stock");
     }
   };
 
-  const editStock = async (
+  const editItemHandler = async (
     id,
     itemname,
     itemprice,
@@ -100,36 +126,20 @@ const Context = ({ children }) => {
         alert(data.message);
       }
     } catch (err) {
-      console.log("Error in editing the item", err);
+      console.error("Error in editing the item", err);
     }
   };
-
-  // useEffect(() => {
-  //   const checkLogin = async () => {
-  //     try {
-  //       const res = await LoggedInStatus();
-  //       console.log("res status is ", res);
-  //       if (res.status === 200) {
-  //         setIsLoggedIn(true);
-  //       } else {
-  //         setIsLoggedIn(false);
-  //       }
-  //     } catch (error) {
-  //       console.log("Auto login check error", err);
-  //       setIsLoggedIn(false);
-  //     }
-  //   };
-
-  //   checkLogin();
-  // }, []);
-  // console.log("logged in status", isLoggedIn);
 
   return (
     <Logic.Provider
       value={{
         isLoggedIn,
         serverData,
+        allStock,
+        setAllStock,
         createStock,
+        LoggedInStatus,
+        editItemHandler,
         setIsLoggedIn,
         setServerData,
         dispatchLogin,

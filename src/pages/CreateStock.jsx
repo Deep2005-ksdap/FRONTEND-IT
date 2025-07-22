@@ -1,50 +1,76 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Logic } from "../store/Context";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const CreateStock = () => {
   const navigate = useNavigate();
-  const { createStock } = useContext(Logic);
+  const { stockId } = useParams();
+  const location = useLocation();
+  const { createStock, editItemHandler } = useContext(Logic);
   const [category, setCategory] = useState("groceries");
 
-  const itemNameElement = useRef();
-  const itemPriceElement = useRef();
-  const itemUnitsElement = useRef();
-  const itemBrandElement = useRef();
-  const itemSizeElement = useRef();
+  let title;
+  if (location.pathname === "/home/add-item") {
+    title = "ADD stock";
+  } else {
+    title = "EDIT-Item";
+  }
+  const{ stock }= location.state || {};
 
-  
+  const [itemname, setItemName] = useState("");
+  const [itemprice, setItemPrice] = useState();
+  const [itemunits, setItemUnits] = useState();
+  const [itembrand, setItemBrand] = useState("");
+  const [itemsize, setItemSize] = useState("");
+
   const handleData = async (event) => {
     event.preventDefault();
-
-    const itemname = itemNameElement.current.value;
-    const itemprice = itemPriceElement.current.value;
-    const itemunits = itemUnitsElement.current.value;
-    const itembrand =
-      category === "electronics" ? itemBrandElement.current.value : "";
-    const itemsize =
-      category === "clothing" ? itemSizeElement.current.value : "";
-
-    await createStock(
-      itemname,
-      itemprice,
-      itemunits,
-      itembrand,
-      category,
-      itemsize
-    );
+    if (location.pathname === "/home/add-item") {
+      await createStock(
+        itemname,
+        itemprice,
+        itemunits,
+        itembrand,
+        category,
+        itemsize
+      );
+    } else {
+      await editItemHandler(
+        stockId,
+        itemname,
+        itemprice,
+        itemunits,
+        itembrand,
+        category,
+        itemsize
+      );
+    }
     navigate("/home/dashboard");
 
-    itemNameElement.current.value = "";
-    itemPriceElement.current.value = "";
-    itemUnitsElement.current.value = "";
+    setCategory("");
+    setItemName("");
+    setItemPrice("");
+    setItemSize("");
+    setItemBrand("");
+    setItemUnits("");
   };
+
+  useEffect(() => {
+    if (stock) {
+      setItemName(stock.itemname);
+      setItemPrice(stock.itemprice);
+      setItemUnits(stock.itemunits);
+      setCategory(stock.category);
+      if (stock.category === "clothing") setItemSize(stock.itemsize);
+      if (stock.category === "electronics") setItemBrand(stock.itembrand);
+    }
+  }, [stock]);
 
   return (
     <div className="min-h-screen  flex justify-center items-center bg-white shadow bg-gradient-to-r from-blue-100 via-white to-green-100">
-      <div className="max-w-[600px] w-full border-white border-2 p-4 rounded-2xl hover:shadow-xl  ">
+      <div className="max-w-[600px] w-full border-white border-2 px-4 py-2 rounded-2xl hover:shadow-xl  ">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
-          ADD Stock
+          {title}
         </h2>
 
         <form onSubmit={handleData} className="px-2">
@@ -69,17 +95,32 @@ const CreateStock = () => {
 
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Item Name</label>
-            <input type="text" ref={itemNameElement} placeholder="eg. Chips" />
+            <input
+              type="text"
+              value={itemname}
+              onChange={(e) => setItemName(e.target.value)}
+              placeholder="eg. Chips"
+            />
           </div>
 
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Item Price (₹)</label>
-            <input type="number" ref={itemPriceElement} placeholder="eg. 499" />
+            <input
+              type="number"
+              value={itemprice}
+              onChange={(e) => setItemPrice(e.target.value)}
+              placeholder="eg. 499"
+            />
           </div>
 
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Unit</label>
-            <input type="number" ref={itemUnitsElement} placeholder="eg. 10" />
+            <input
+              type="number"
+              value={itemunits}
+              onChange={(e) => setItemUnits(e.target.value)}
+              placeholder="eg. 10"
+            />
           </div>
 
           {category === "electronics" && (
@@ -87,7 +128,10 @@ const CreateStock = () => {
               <label className="block text-gray-700 mb-1">Brand Name</label>
               <input
                 type="text"
-                ref={itemBrandElement}
+                value={itembrand}
+                onChange={(e) => {
+                  setItemBrand(e.target.value);
+                }}
                 placeholder="eg. XYZ company"
               />
             </div>
@@ -96,7 +140,14 @@ const CreateStock = () => {
           {category === "clothing" && (
             <div className="mb-4">
               <label className="block text-gray-700 mb-1">Size</label>
-              <input type="text" ref={itemSizeElement} placeholder="eg. M" />
+              <input
+                type="text"
+                value={itemsize}
+                placeholder="eg. M"
+                onChange={(e) => {
+                  setItemSize(e.target.value);
+                }}
+              />
             </div>
           )}
 
@@ -104,7 +155,7 @@ const CreateStock = () => {
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
           >
-            Add Item
+            {title === "EDIT-Item" ? "Edit" : "Add"} Item{" "}
           </button>
         </form>
       </div>
