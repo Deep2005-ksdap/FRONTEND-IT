@@ -25,7 +25,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="bg-[url(../../../public/loginInventoryTrackor.jpg)] min-h-screen bg-cover">
+    <div className="bg-[url(/loginInventoryTrackor.jpg)] min-h-screen bg-cover">
       <div className="h-full flex flex-col gap-4 justify-center items-center min-h-screen px-2 py-2 min-w-[350px] sm:min-w-[450px] ">
         <h1 className="text-2xl font-bold sm:text-3xl">
           Login to your <u>INVENTORY</u>

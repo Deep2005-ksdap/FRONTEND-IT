@@ -53,7 +53,7 @@ const RegistrationPage = () => {
   };
 
   return (
-    <div className="bg-[url(../../../public/loginInventoryTrackor.jpg)] min-h-screen bg-cover">
+    <div className="bg-[url(/loginInventoryTrackor.jpg)] min-h-screen bg-cover">
       <div className="h-full flex flex-col gap-4 justify-center items-center px-2 py-2 min-w-[300px]">
         <h1 className="text-3xl font-bold">Create Your Account</h1>
         {err && (
