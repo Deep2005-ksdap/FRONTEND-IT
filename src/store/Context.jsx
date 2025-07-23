@@ -22,7 +22,6 @@ const Context = ({ children }) => {
     setIsLoggedIn(value);
   };
 
-  console.log(isLoggedIn);
   const LoggedInStatus = async (email, password) => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/login`, {

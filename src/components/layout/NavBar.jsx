@@ -29,8 +29,7 @@ const NavBar = () => {
     if (isLoggedIn) {
       setActive(true);
     }
-  }, []);
-
+  }, [isLoggedIn]);
 
   return (
     <nav

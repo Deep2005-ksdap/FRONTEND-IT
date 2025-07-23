@@ -41,7 +41,6 @@ function App() {
     checkAuth();
   }, []);
 
-  console.log(isLoggedIn);
   return (
     <Routes>
       <Route path="/" element={<Home />}>

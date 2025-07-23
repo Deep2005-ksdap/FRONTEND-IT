@@ -58,7 +58,6 @@ const Dashboard = () => {
     totalStockValue = serverData.data.totalStockValue;
   }
 
-  console.log(isLoggedIn)
   const dataArray = allStock
     ? allStock.reduce((acc, item) => {
         const { category } = item;
