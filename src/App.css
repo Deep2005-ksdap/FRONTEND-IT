@@ -16,13 +16,17 @@ nav {
   color: #0f2334;
   animation: fadeInUp 1s;
 }
-.qoutes, .quotes2, link, .footer, .marquee, .img{ 
+.qoutes,
+.quotes2,
+link,
+.footer,
+.marquee,
+.img {
   animation: fadeInUp 2s;
 }
 
-
 .quotes3 {
-   width: 27ch;
+  width: 27ch;
   white-space: nowrap;
   overflow: hidden;
   border-right: 2px solid green;
@@ -30,7 +34,23 @@ nav {
   animation: typing 5s steps(37) infinite, blink 0.5s step-end 2;
 }
 
-
+label {
+  text-align: left;
+}
+input {
+  padding: 5px 0 5px 0;
+  outline: none;
+  display: block;
+  width: 100%;
+}
+input:hover {
+  outline: none;
+  border-bottom: 1px solid green;
+}
+input:focus {
+  outline: none;
+  border-bottom: 2px solid gray;
+}
 
 @keyframes typing {
   from {
