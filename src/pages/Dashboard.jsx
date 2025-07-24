@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import Loader from "../components/layout/Loader";
-import NotFoundPage from "./NotFoundPage";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -68,7 +67,7 @@ const Dashboard = () => {
         return acc;
       }, {})
     : {};
-  return isLoggedIn ? (
+  return isLoggedIn ? (allStock ? (
     <main className="flex flex-col items-center  min-h-screen w-auto bg-gradient-to-r from-blue-100 via-white to-green-100 px-4 py-4 text-center">
       <h1 className="text-2xl mb-4 font-bold text-blue-500">
         Welcome,
@@ -76,6 +75,7 @@ const Dashboard = () => {
           "{ownerName}"
         </span>
       </h1>
+      
       <ol className="flex w-full flex-col gap-2 px-6 py-4 text-gray-700 bg-blue-100 rounded-2xl text-left font-medium mb-6">
         <li className="flex justify-between items-center font-bold">
           <span>Total value of Your Inventory:</span>
@@ -112,70 +112,66 @@ const Dashboard = () => {
             <h2 className="font-bold text-xl mt-2 text-red-400">
               Category: {category}
             </h2>
-            {serverData ? (
-              <div className="m-4 w-full">
-                <table className="table-fixed w-full mt-4 px-4 py-4 text-left">
-                  <thead className="text-gray-500 border-b-2 border-gray-300">
-                    <tr className="text-center">
-                      <th className="px-4 py-2">Item</th>
-                      <th className="px-4 py-2">Price</th>
-                      <th className="px-4 py-2">Units</th>
-                      {category === "electronics" && (
-                        <th className="px-4 py-2">Brand</th>
-                      )}
-                      {category === "clothing" && (
-                        <th className="px-4 py-2">Size</th>
-                      )}
-                      <th className="px-4 py-2">Edit</th>
-                      <th className="px-4 py-2">Del</th>
-                    </tr>
-                  </thead>
+            <div className="m-4 w-full">
+              <table className="table-fixed w-full mt-4 px-4 py-4 text-left">
+                <thead className="text-gray-500 border-b-2 border-gray-300">
+                  <tr className="text-center">
+                    <th className="px-4 py-2">Item</th>
+                    <th className="px-4 py-2">Price</th>
+                    <th className="px-4 py-2">Units</th>
+                    {category === "electronics" && (
+                      <th className="px-4 py-2">Brand</th>
+                    )}
+                    {category === "clothing" && (
+                      <th className="px-4 py-2">Size</th>
+                    )}
+                    <th className="px-4 py-2">Edit</th>
+                    <th className="px-4 py-2">Del</th>
+                  </tr>
+                </thead>
 
-                  <tbody>
-                    {items.map((item, index) => (
-                      <tr className="text-center" key={index}>
-                        <td className="font-bold text-blue-600 px-4 py-2">
-                          {item.itemname}
-                        </td>
+                <tbody>
+                  {items.map((item, index) => (
+                    <tr className="text-center" key={index}>
+                      <td className="font-bold text-blue-600 px-4 py-2">
+                        {item.itemname}
+                      </td>
+                      <td className="font-medium px-4 py-2">
+                        {item.itemprice}
+                      </td>
+                      <td className="font-medium px-4 py-2">
+                        {item.itemunits}
+                      </td>
+                      {item.category === "electronics" && (
                         <td className="font-medium px-4 py-2">
-                          {item.itemprice}
+                          {item.itembrand}
                         </td>
+                      )}
+                      {item.category === "clothing" && (
                         <td className="font-medium px-4 py-2">
-                          {item.itemunits}
+                          {item.itemsize}
                         </td>
-                        {item.category === "electronics" && (
-                          <td className="font-medium px-4 py-2">
-                            {item.itembrand}
-                          </td>
-                        )}
-                        {item.category === "clothing" && (
-                          <td className="font-medium px-4 py-2">
-                            {item.itemsize}
-                          </td>
-                        )}
-                        <td className="text-blue-500 text-xl hover:text-blue-700 hover:cursor-pointer px-4 py-2 flex justify-center">
-                          <Link
-                            to={`/home/edit-item/${item._id}`}
-                            state={{ stock: item }}
-                          >
-                            <FaEdit />
-                          </Link>
-                        </td>
-                        <td className="text-red-500 text-xl hover:text-red-700 hover:cursor-pointer px-4 py-2 item-center">
-                          <div className="flex justify-center">
-                            <button onClick={() => handleDeleteItem(item._id)}>
-                              <MdDeleteForever />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <Loader />
-            )}
+                      )}
+                      <td className="text-blue-500 text-xl hover:text-blue-700 hover:cursor-pointer px-4 py-2 flex justify-center">
+                        <Link
+                          to={`/home/edit-item/${item._id}`}
+                          state={{ stock: item }}
+                        >
+                          <FaEdit />
+                        </Link>
+                      </td>
+                      <td className="text-red-500 text-xl hover:text-red-700 hover:cursor-pointer px-4 py-2 item-center">
+                        <div className="flex justify-center">
+                          <button onClick={() => handleDeleteItem(item._id)}>
+                            <MdDeleteForever />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ))
       )}
@@ -188,7 +184,7 @@ const Dashboard = () => {
         </Link>
       </div>
     </main>
-  ) : (
+  ) : <Loader />) : (
     <main className="flex justify-center items-center px-4 py-4 text-gray-400 min-h-screen font-extrabold text-4xl">
       <h1>Logged In first with credentials given in input placeholder!</h1>
     </main>

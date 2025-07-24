@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { Logic } from "../store/Context";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 
 const CreateStock = () => {
   const navigate = useNavigate();
   const { stockId } = useParams();
   const location = useLocation();
-  const { createStock, editItemHandler } = useContext(Logic);
+  const {isLoggedIn, createStock, editItemHandler } = useContext(Logic);
   const [category, setCategory] = useState("groceries");
 
   let title;
@@ -66,7 +66,7 @@ const CreateStock = () => {
     }
   }, [stock]);
 
-  return (
+  return isLoggedIn ? (
     <div className="min-h-screen  flex justify-center items-center bg-white shadow bg-gradient-to-r from-blue-100 via-white to-green-100">
       <div className="max-w-[600px] w-full border-white border-2 px-4 py-2 rounded-2xl hover:shadow-xl  ">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
@@ -160,7 +160,7 @@ const CreateStock = () => {
         </form>
       </div>
     </div>
-  );
+  ) : <Navigate to={"/user/login"}/>
 };
 
 export default CreateStock;

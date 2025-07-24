@@ -3,6 +3,7 @@ import { createContext, useState } from "react";
 export const Logic = createContext({
   isLoggedIn: false,
   serverData: null,
+  checkAuth: async() => {},
   setAllStock: () => {},
   LoggedInStatus: async () => {},
   setServerData: () => {},
@@ -45,23 +46,49 @@ const Context = ({ children }) => {
     }
   };
 
-  const dataOfUser = async () => {
+  const checkAuth = async () => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/home/dashboard`,
+        `${import.meta.env.VITE_API_URL}/user/check-auth`,
         {
           method: "GET",
           credentials: "include",
         }
       );
       const data = await res.json();
-      if (res.ok) {
-        setServerData(data || null);
-        setAllStock(data?.data.allStock);
+      if (res.ok || data?.isLoggedIn) {
+        dispatchLogin(true);
+      } else {
+        dispatchLogin(false);
       }
       return data;
-    } catch (err) {
-      console.error("error in fetching data, ", err);
+    } catch (error) {
+      console.log("Error in Authentication", error);
+    }
+  };
+
+  const dataOfUser = async () => {
+    const data = await checkAuth();
+    if (data.isLoggedIn) {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/home/dashboard`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        const data = await res.json();
+        if (res.ok) {
+          setServerData(data || null);
+          setAllStock(data?.data.allStock);
+        }
+        return data;
+      } catch (err) {
+        console.error("error in fetching data, ", err);
+      }
+    } else {
+      console.error("Login error , Please login again");
     }
   };
 
@@ -73,24 +100,32 @@ const Context = ({ children }) => {
     category,
     itemsize
   ) => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/home/add-item`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          itemname,
-          itemprice,
-          itemunits,
-          itembrand,
-          category,
-          itemsize,
-        }),
-      });
+    const data = await checkAuth();
+    if (data.isLoggedIn) {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/home/add-item`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              itemname,
+              itemprice,
+              itemunits,
+              itembrand,
+              category,
+              itemsize,
+            }),
+          }
+        );
 
-      const data = await res.json();
-    } catch (error) {
-      console.error("error in creating the stock");
+        const data = await res.json();
+      } catch (error) {
+        console.error("error in creating the stock");
+      }
+    } else {
+      console.error("Login error , Please login again");
     }
   };
 
@@ -103,29 +138,34 @@ const Context = ({ children }) => {
     category,
     itemsize
   ) => {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/home/edit-item/${id}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            itemname,
-            itemprice,
-            itemunits,
-            itembrand,
-            category,
-            itemsize,
-          }),
+    const data = await checkAuth();
+    if (data.isLoggedIn) {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/home/edit-item/${id}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              itemname,
+              itemprice,
+              itemunits,
+              itembrand,
+              category,
+              itemsize,
+            }),
+          }
+        );
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
         }
-      );
-      const data = await res.json();
-      if (res.ok) {
-        alert(data.message);
+      } catch (err) {
+        console.error("Error in editing the item", err);
       }
-    } catch (err) {
-      console.error("Error in editing the item", err);
+    }else {
+      console.error("Login error , please Login again")
     }
   };
 
@@ -135,6 +175,7 @@ const Context = ({ children }) => {
         isLoggedIn,
         serverData,
         allStock,
+        checkAuth,
         setAllStock,
         createStock,
         LoggedInStatus,
